@@ -45,14 +45,26 @@ const Home = Vue.component('home', {
 
 const Upload_form = Vue.component('upload-form', {
     template: `
-    <form @submit.prevent="uploadPhoto" id="uploadForm">
-        <input type="text" name="description">
-        <input type="file" name="photo">
-        <input type="submit">
+    <div>
+        <div v-if="visible">
+            <div v-if="errors" class="alert alert-danger">
+                <li v-for="error in errors">{{ error }}</li>
+            </div>
+            <div v-else class="alert alert-success">File Upload Successful</div>
+        </div>
+    
+    <form @submit.prevent="uploadPhoto();visible = true" id="uploadForm">
+        <label>Description</label>
+        <input type="text" name="description" class="form-group form-control">
+        <label>Photo</label>
+        <input type="file" name="photo" class="form-group form-control">
+        <input type="submit" class="btn btn-primary" >
     </form>
+    </div>
     `,
     methods : {
         uploadPhoto : function(){
+            let self = this;
             
             let uploadForm = document.getElementById('uploadForm');
             let form_data = new FormData(uploadForm);
@@ -69,13 +81,20 @@ const Upload_form = Vue.component('upload-form', {
             })
             .then(function (jsonResponse) {
             // display a success message
+                self.errors = jsonResponse.errors;
                 console.log(jsonResponse);
             })
             .catch(function (error) {
                 console.log(error);
             });
                     }
+            },
+        data : function(){
+            return {
+                errors:[],
+                visible: false
             }
+        }
 });
 
 // Define Routes
